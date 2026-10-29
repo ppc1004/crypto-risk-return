@@ -71,4 +71,4 @@ crypto-risk-return/
 - Results depend on the window. This one starts a month before the Nov 2021 peak, which makes returns look worse than a window starting earlier would.
 - Raw price data is not included in the repo; run step 1 to download it.
 
-*A data project for learning, not investment advice.*
+*An independent data analysis project, not investment advice.*

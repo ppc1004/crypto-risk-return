@@ -22,7 +22,7 @@
     <p class="eyebrow">5 coins · 5 years · <span id="days"></span> days of prices</p>
     <h1>Did the riskier coins pay off more?</h1>
     <p class="lead">I compared Bitcoin, Ethereum, Tether, BNB and XRP from October 2021 to September 2026 to see if the coins with the bumpiest prices also earned the most.</p>
-    <div class="answer"><p><strong>Short answer: no.</strong> XRP was the riskiest coin but earned less than Bitcoin and BNB. Ethereum was riskier than Bitcoin and still lost money. Over these five years, taking more risk did not reliably bring more reward.</p></div>
+    <div class="answer"><p><strong>Short answer: not in this period.</strong> XRP was the riskiest coin but earned less than Bitcoin and BNB. Ethereum was riskier than Bitcoin and still lost money. Five coins over one period cannot prove a general rule, but here, more risk did not bring more reward.</p></div>
   </section>
 
   <h2>What I found</h2>
@@ -30,9 +30,9 @@
     <li><strong>More risk did not mean more return.</strong> XRP had the biggest price swings (<span data-v="five_year.XRP.annual_volatility|pctPlain"></span> yearly volatility) but grew <span data-v="five_year.XRP.total_return|pct"></span>. BNB was calmer (<span data-v="five_year.BNB.annual_volatility|pctPlain"></span>) and grew <span data-v="five_year.BNB.total_return|pct"></span>.</li>
     <li><strong>Ethereum lost money despite high risk.</strong> It swung more than Bitcoin (<span data-v="five_year.ETH.annual_volatility|pctPlain"></span> vs <span data-v="five_year.BTC.annual_volatility|pctPlain"></span>) and ended <span data-v="five_year.ETH.total_return|pct"></span>, while Bitcoin ended <span data-v="five_year.BTC.total_return|pct"></span>.</li>
     <li><strong>Every coin except Tether crashed 70–80% at some point.</strong> All four peaked in November 2021 and hit bottom in 2022. Bitcoin's worst fall was <span data-v="five_year.BTC.max_drawdown|abs"></span>.</li>
-    <li><strong>The "stable" coin was stable, but earned nothing.</strong> Tether stayed within about 1% of $1. A 3-month U.S. Treasury bill paid about <span data-v="risk_free.five_year|pct1"></span> a year over the same period.</li>
+    <li><strong>Tether held steady but earned nothing.</strong> Tether stayed within about 1% of $1. A 3-month U.S. Treasury bill paid about <span data-v="risk_free.five_year|pct1"></span> a year over the same period.</li>
     <li><strong>The last 12 months were rough.</strong> From October 2025 to September 2026, Bitcoin fell <span data-v="one_year.BTC.total_return|abs"></span> and XRP fell <span data-v="one_year.XRP.total_return|abs"></span>.</li>
-    <li><strong>The coins tend to move together.</strong> On a given day, Bitcoin and Ethereum usually moved in the same direction (correlation <span data-v="correlation.BTC.ETH|num"></span>), so owning both did not spread risk much.</li>
+    <li><strong>The coins tend to move together.</strong> On a given day, Bitcoin and Ethereum usually moved in the same direction (correlation <span data-v="correlation.BTC.ETH|num"></span>), so holding both lowered risk less than you might expect.</li>
   </ul>
 
   <h2>Risk vs. return</h2>
@@ -65,10 +65,20 @@
 
   <h2>Look at each coin</h2>
   <div class="coins" id="coins"></div>
+
+  <h2>About this project</h2>
+  <p>I built this project on my own, from getting the data to publishing this site:</p>
+  <ul class="findings">
+    <li><strong>Data:</strong> downloaded 1,826 days of prices for 5 coins and the 3-month T-bill rate from Yahoo Finance with Python.</li>
+    <li><strong>Analysis:</strong> calculated return, volatility, maximum drawdown, Sharpe ratio and correlation for two time windows (5 years and the last 12 months).</li>
+    <li><strong>Charts:</strong> made 34 charts with Matplotlib, 6 for each coin plus 4 that compare all five.</li>
+    <li><strong>Website:</strong> built this site with plain HTML, CSS and JavaScript and published it on GitHub Pages. The numbers on the site are read from the analysis output, so they always match the code.</li>
+  </ul>
+  <p class="note">Tools: Python (pandas, NumPy, Matplotlib), HTML/CSS/JavaScript, Git, GitHub Pages. <a href="https://github.com/ppc1004/crypto-risk-return">See the code on GitHub</a>.</p>
 </main>
 <footer><div class="wrap">
   <p>Made by Pay-Chern Liu · <a href="https://github.com/ppc1004/crypto-risk-return">Code on GitHub</a> · <a href="https://www.linkedin.com/in/pay-chern-liu-8033b033a">LinkedIn</a></p>
-  <p>Data: daily closing prices from Yahoo Finance (Oct 1, 2021 to Sep 30, 2026). Risk-free rate: 3-month U.S. Treasury bill. This is a data project for learning, not investment advice.</p>
+  <p>Data: daily closing prices from Yahoo Finance (Oct 1, 2021 to Sep 30, 2026). Risk-free rate: 3-month U.S. Treasury bill. This is an independent data analysis project, not investment advice.</p>
 </div></footer>
 <script src="app.js"></script>
 <script>
