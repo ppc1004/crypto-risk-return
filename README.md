@@ -72,3 +72,5 @@ crypto-risk-return/
 - Raw price data is not included in the repo; run step 1 to download it.
 
 *An independent data analysis project, not investment advice.*
+
+*Built with help from AI coding tools. The analysis, model choices and conclusions are my own.*
