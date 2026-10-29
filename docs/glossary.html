@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Key terms · Crypto Risk & Return</title>
+<meta name="description" content="Plain-English explanations of return, volatility, drawdown, Sharpe ratio and correlation.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site"><div class="wrap">
+  <a class="brand" href="index.html">Crypto Risk &amp; Return</a>
+  <nav>
+    <a href="index.html">Overview</a>
+    <a href="coin.html?c=BTC">Each coin</a>
+    <a href="glossary.html" class="active">Key terms</a>
+    <a href="https://github.com/ppc1004/crypto-risk-return">GitHub</a>
+  </nav>
+</div></header>
+<main class="wrap">
+  <section class="hero">
+    <p class="eyebrow">Key terms</p>
+    <h1>What the numbers mean</h1>
+    <p class="lead">Every number on this site, explained in plain words, with an example from the data.</p>
+  </section>
+
+  <dl class="glossary">
+    <dt>Total return</dt>
+    <dd><p>How much the price changed from the first day to the last day.</p>
+      <p class="example">Bitcoin went from <span data-v="five_year.BTC.start_price|money"></span> to <span data-v="five_year.BTC.end_price|money"></span>, a total return of <span data-v="five_year.BTC.total_return"></span>.</p></dd>
+
+    <dt>Return per year</dt>
+    <dd><p>The steady yearly growth rate that would get you the same total return. It makes periods of different lengths easy to compare. (Also called CAGR, compound annual growth rate.)</p>
+      <p class="example">Bitcoin's <span data-v="five_year.BTC.total_return"></span> over five years is the same as growing about <span data-v="five_year.BTC.annual_return|pct1"></span> every year.</p></dd>
+
+    <dt>Volatility (risk)</dt>
+    <dd><p>How much the price jumps around. I take the daily price changes, measure how spread out they are (the standard deviation), and scale it up to a yearly number by multiplying by the square root of 365, since crypto trades every day.</p>
+      <p>Higher volatility means a bumpier ride: bigger gains on good days and bigger losses on bad days.</p>
+      <p class="example">XRP's yearly volatility was <span data-v="five_year.XRP.annual_volatility|pctPlain"></span>. Tether's was <span data-v="five_year.USDT.annual_volatility|pct1"></span>.</p></dd>
+
+    <dt>Drawdown (fall from peak)</dt>
+    <dd><p>How far the price is below the highest price it has reached so far. The <strong>maximum drawdown</strong> is the worst of these: the most someone could have lost by buying at the top and selling at the bottom.</p>
+      <p class="example">Ethereum's maximum drawdown was <span data-v="five_year.ETH.max_drawdown|pctPlain"></span>, from <span data-v="five_year.ETH.drawdown_peak_date|date"></span> to <span data-v="five_year.ETH.drawdown_bottom_date|date"></span>.</p></dd>
+
+    <dt>Risk-free rate</dt>
+    <dd><p>What you could earn with almost no risk. I use the average yield on a 3-month U.S. Treasury bill over the same period.</p>
+      <p class="example">Over the five years this averaged <span data-v="risk_free.five_year|pct1"></span> a year.</p></dd>
+
+    <dt>Sharpe ratio</dt>
+    <dd><p>Return per unit of risk. It takes the average yearly return, subtracts the risk-free rate, and divides by volatility. Higher is better. Below 0 means you would have done better in Treasury bills.</p>
+      <p class="example">Bitcoin: <span data-v="five_year.BTC.sharpe_ratio|num"></span>. Tether: <span data-v="five_year.USDT.sharpe_ratio|num"></span>, because it earned nothing while T-bills paid about <span data-v="risk_free.five_year|pct1"></span>.</p>
+      <p><strong>Why can Ethereum lose money but still have a positive Sharpe ratio (<span data-v="five_year.ETH.sharpe_ratio|num"></span>)?</strong> The Sharpe ratio uses the simple average of daily returns. Big swings hurt the final result more than the average shows: a 50% drop followed by a 50% gain averages 0%, but leaves you 25% down. This gap is called <em>volatility drag</em>, and it is one more cost of high risk.</p></dd>
+
+    <dt>Correlation</dt>
+    <dd><p>How closely two coins move together, from -1 to 1. Close to 1 means they usually go up and down on the same days. Close to 0 means no connection.</p>
+      <p class="example">Bitcoin and Ethereum: <span data-v="correlation.BTC.ETH|num"></span>. Bitcoin and Tether: <span data-v="correlation.BTC.USDT|num"></span>.</p></dd>
+
+    <dt>Stablecoin</dt>
+    <dd><p>A coin designed to stay at a fixed price, usually $1. Tether (USDT) is the largest. I include it as a baseline: it shows what "almost no risk" looks like in this data.</p></dd>
+
+    <dt>Log scale</dt>
+    <dd><p>A chart scale where each step up is the same percentage change, not the same dollar change. Going from $10 to $20 looks the same as $1,000 to $2,000. It is useful when prices change a lot.</p></dd>
+  </dl>
+
+  <h2>About the data</h2>
+  <p>Daily closing prices and volumes for <span id="days"></span> days (Oct 1, 2021 to Sep 30, 2026), downloaded from Yahoo Finance. The window is fixed so anyone who re-runs the code gets the same numbers. All calculations are in <a href="https://github.com/ppc1004/crypto-risk-return/blob/main/src/analysis.py">src/analysis.py</a>.</p>
+  <p>Limits: past results don't predict future prices; five coins are not the whole market; and the period starts close to the November 2021 peak, which makes the results look worse than a window starting a year earlier.</p>
+</main>
+<footer><div class="wrap">
+  <p>Made by Pay-Chern Liu · <a href="https://github.com/ppc1004/crypto-risk-return">Code on GitHub</a> · <a href="https://www.linkedin.com/in/pay-chern-liu-8033b033a">LinkedIn</a></p>
+  <p>Data: daily closing prices from Yahoo Finance (Oct 1, 2021 to Sep 30, 2026). Risk-free rate: 3-month U.S. Treasury bill. This is a data project for learning, not investment advice.</p>
+</div></footer>
+<script src="app.js"></script>
+<script>
+loadData().then(function (data) {
+  document.querySelectorAll('[data-v$="|money"]').forEach(function (el) {
+    var v = el.getAttribute("data-v").split("|")[0].split(".").reduce(function (o, k) { return o[k]; }, data);
+    el.textContent = money(v);
+    el.removeAttribute("data-v");
+  });
+  fillValues(data);
+  document.getElementById("days").textContent = data.period.days.toLocaleString("en-US");
+});
+</script>
+</body>
+</html>

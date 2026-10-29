@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Each coin · Crypto Risk & Return</title>
+<meta name="description" content="Price, volume, returns, volatility and drawdown charts for each coin.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site"><div class="wrap">
+  <a class="brand" href="index.html">Crypto Risk &amp; Return</a>
+  <nav>
+    <a href="index.html">Overview</a>
+    <a href="coin.html?c=BTC" class="active">Each coin</a>
+    <a href="glossary.html">Key terms</a>
+    <a href="https://github.com/ppc1004/crypto-risk-return">GitHub</a>
+  </nav>
+</div></header>
+<main class="wrap">
+  <div class="tabs" id="tabs"></div>
+  <section class="hero" style="padding-top:28px">
+    <p class="eyebrow">Oct 2021 – Sep 2026</p>
+    <h1 id="title"></h1>
+    <p class="lead" id="summary"></p>
+    <div class="stats" id="stats"></div>
+  </section>
+
+  <div id="charts"></div>
+
+  <h2>5 years vs. last 12 months</h2>
+  <div class="table-wrap" id="compare"></div>
+  <p class="note">Words like volatility, drawdown and Sharpe ratio are explained in <a href="glossary.html">Key terms</a>.</p>
+</main>
+<footer><div class="wrap">
+  <p>Made by Pay-Chern Liu · <a href="https://github.com/ppc1004/crypto-risk-return">Code on GitHub</a> · <a href="https://www.linkedin.com/in/pay-chern-liu-8033b033a">LinkedIn</a></p>
+  <p>Data: daily closing prices from Yahoo Finance (Oct 1, 2021 to Sep 30, 2026). Risk-free rate: 3-month U.S. Treasury bill. This is a data project for learning, not investment advice.</p>
+</div></footer>
+<script src="app.js"></script>
+<script>
+var CHARTS = [
+  ["01_price", "Price", "The daily closing price. Most coins are shown on a log scale, where the same height always means the same percentage change, so a fall from $60,000 to $30,000 looks as big as one from $2 to $1."],
+  ["02_volume", "Trading volume", "How many dollars' worth of the coin changed hands each day, averaged over 30 days. Volume shows how much interest and activity there was."],
+  ["03_monthly_returns", "Monthly returns", "How much the price went up or down in each calendar month."],
+  ["04_daily_return_hist", "Size of daily moves", "Each bar counts how many days had a price change of that size. A wider spread means bigger day-to-day swings, which is what volatility measures."],
+  ["05_rolling_volatility", "Volatility over time", "Risk is not constant. This line shows volatility measured over the latest 30 days at each point, so you can see calm and stormy periods."],
+  ["06_drawdown", "Fall from peak", "How far the price was below its highest point so far. 0% means a new high. This shows how much pain a buyer at the top would have felt."]
+];
+
+loadData().then(function (data) {
+  var coin = new URLSearchParams(location.search).get("c");
+  if (COIN_ORDER.indexOf(coin) < 0) coin = "BTC";
+  var r = data.five_year[coin];
+  var r1 = data.one_year[coin];
+  document.title = r.name + " · Crypto Risk & Return";
+
+  var tabs = "";
+  COIN_ORDER.forEach(function (c) {
+    tabs += '<a href="coin.html?c=' + c + '"' + (c === coin ? ' class="on"' : "") + ">" + data.five_year[c].name + "</a>";
+  });
+  document.getElementById("tabs").innerHTML = tabs;
+
+  document.getElementById("title").innerHTML = dot(data.colors[coin]) + r.name;
+  var s = r.name + " went from " + money(r.start_price) + " to " + money(r.end_price) +
+    " (" + pct(r.total_return) + "). It rose on " + pctPlain(r.share_of_up_days) +
+    " of days. Its best day was " + pct(r.best_day, 1) + " and its worst day was " + pct(r.worst_day, 1) + ".";
+  if (coin === "USDT") {
+    s += " Tether is a stablecoin designed to stay at $1, so it is a useful baseline for the other four.";
+  } else {
+    s += " Its biggest fall was " + pctPlain(Math.abs(r.max_drawdown)) + ", from " +
+      niceDate(r.drawdown_peak_date) + " to " + niceDate(r.drawdown_bottom_date) + ".";
+  }
+  document.getElementById("summary").textContent = s;
+
+  var stats = [
+    ["Total return", pct(r.total_return)],
+    ["Per year", pct(r.annual_return, 1)],
+    ["Risk (volatility)", pctPlain(r.annual_volatility, coin === "USDT" ? 1 : 0)],
+    ["Worst fall from peak", pctPlain(r.max_drawdown, coin === "USDT" ? 1 : 0)]
+  ];
+  document.getElementById("stats").innerHTML = stats.map(function (x) {
+    return '<div class="stat"><div class="label">' + x[0] + '</div><div class="value">' + x[1] + "</div></div>";
+  }).join("");
+
+  document.getElementById("charts").innerHTML = CHARTS.map(function (c) {
+    return '<h2>' + c[1] + '</h2><div class="card"><img loading="lazy" src="images/' + coin + "_" + c[0] +
+      '.png" alt="' + r.name + " " + c[1].toLowerCase() + ' chart"><p>' + c[2] + "</p></div>";
+  }).join("");
+
+  var rows = [
+    ["Total return", pct(r.total_return), pct(r1.total_return)],
+    ["Risk (volatility)", pctPlain(r.annual_volatility, 1), pctPlain(r1.annual_volatility, 1)],
+    ["Worst fall from peak", pctPlain(r.max_drawdown, 1), pctPlain(r1.max_drawdown, 1)],
+    ["Sharpe ratio", num(r.sharpe_ratio), num(r1.sharpe_ratio)],
+    ["Best day", pct(r.best_day, 1), pct(r1.best_day, 1)],
+    ["Worst day", pct(r.worst_day, 1), pct(r1.worst_day, 1)]
+  ];
+  document.getElementById("compare").innerHTML = "<table><thead><tr><th></th><th>5 years</th><th>Last 12 months</th></tr></thead><tbody>" +
+    rows.map(function (x) { return "<tr><td>" + x[0] + "</td><td>" + x[1] + "</td><td>" + x[2] + "</td></tr>"; }).join("") +
+    "</tbody></table>";
+});
+</script>
+</body>
+</html>

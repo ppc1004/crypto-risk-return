@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crypto Risk & Return</title>
+<meta name="description" content="Five years of daily data on Bitcoin, Ethereum, Tether, BNB and XRP: did more risk bring more return?">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site"><div class="wrap">
+  <a class="brand" href="index.html">Crypto Risk &amp; Return</a>
+  <nav>
+    <a href="index.html" class="active">Overview</a>
+    <a href="coin.html?c=BTC">Each coin</a>
+    <a href="glossary.html">Key terms</a>
+    <a href="https://github.com/ppc1004/crypto-risk-return">GitHub</a>
+  </nav>
+</div></header>
+<main class="wrap">
+  <section class="hero">
+    <p class="eyebrow">5 coins · 5 years · <span id="days"></span> days of prices</p>
+    <h1>Did the riskier coins pay off more?</h1>
+    <p class="lead">I compared Bitcoin, Ethereum, Tether, BNB and XRP from October 2021 to September 2026 to see if the coins with the bumpiest prices also earned the most.</p>
+    <div class="answer"><p><strong>Short answer: no.</strong> XRP was the riskiest coin but earned less than Bitcoin and BNB. Ethereum was riskier than Bitcoin and still lost money. Over these five years, taking more risk did not reliably bring more reward.</p></div>
+  </section>
+
+  <h2>What I found</h2>
+  <ul class="findings">
+    <li><strong>More risk did not mean more return.</strong> XRP had the biggest price swings (<span data-v="five_year.XRP.annual_volatility|pctPlain"></span> yearly volatility) but grew <span data-v="five_year.XRP.total_return|pct"></span>. BNB was calmer (<span data-v="five_year.BNB.annual_volatility|pctPlain"></span>) and grew <span data-v="five_year.BNB.total_return|pct"></span>.</li>
+    <li><strong>Ethereum lost money despite high risk.</strong> It swung more than Bitcoin (<span data-v="five_year.ETH.annual_volatility|pctPlain"></span> vs <span data-v="five_year.BTC.annual_volatility|pctPlain"></span>) and ended <span data-v="five_year.ETH.total_return|pct"></span>, while Bitcoin ended <span data-v="five_year.BTC.total_return|pct"></span>.</li>
+    <li><strong>Every coin except Tether crashed 70–80% at some point.</strong> All four peaked in November 2021 and hit bottom in 2022. Bitcoin's worst fall was <span data-v="five_year.BTC.max_drawdown|abs"></span>.</li>
+    <li><strong>The "stable" coin was stable, but earned nothing.</strong> Tether stayed within about 1% of $1. A 3-month U.S. Treasury bill paid about <span data-v="risk_free.five_year|pct1"></span> a year over the same period.</li>
+    <li><strong>The last 12 months were rough.</strong> From October 2025 to September 2026, Bitcoin fell <span data-v="one_year.BTC.total_return|abs"></span> and XRP fell <span data-v="one_year.XRP.total_return|abs"></span>.</li>
+    <li><strong>The coins tend to move together.</strong> On a given day, Bitcoin and Ethereum usually moved in the same direction (correlation <span data-v="correlation.BTC.ETH|num"></span>), so owning both did not spread risk much.</li>
+  </ul>
+
+  <h2>Risk vs. return</h2>
+  <div class="card">
+    <img src="images/compare_risk_vs_return.png" alt="Scatter chart of yearly volatility against yearly return for the five coins">
+    <p>If more risk always paid off, the dots would rise from left to right. They don't: XRP sits furthest right (most risk) but below BNB and Bitcoin.</p>
+  </div>
+
+  <h2>The numbers</h2>
+  <div class="toggle" role="tablist">
+    <button class="on" data-w="five_year">5 years</button>
+    <button data-w="one_year">Last 12 months</button>
+  </div>
+  <div class="table-wrap" id="table"></div>
+  <p class="note">Total return = change from first to last day. Per year = the steady yearly rate that gives the same result. Not sure what a term means? See <a href="glossary.html">Key terms</a>.</p>
+
+  <h2>More charts</h2>
+  <div class="card">
+    <img src="images/compare_growth_of_100.png" alt="Line chart of what 100 dollars invested in each coin became">
+    <p>The same $100 ended up anywhere from about $<span id="min100"></span> to $<span id="max100"></span>, depending on the coin.</p>
+  </div>
+  <div class="card">
+      <img src="images/compare_drawdown.png" alt="Line chart of how far each coin fell below its peak">
+      <p>All four volatile coins spent most of 2022 more than 50% below their peak.</p>
+  </div>
+  <div class="card narrow">
+      <img src="images/compare_correlation.png" alt="Heat map of how closely daily moves of each pair of coins match">
+      <p>Darker = moves more closely together. Tether barely moves with the rest.</p>
+  </div>
+
+  <h2>Look at each coin</h2>
+  <div class="coins" id="coins"></div>
+</main>
+<footer><div class="wrap">
+  <p>Made by Pay-Chern Liu · <a href="https://github.com/ppc1004/crypto-risk-return">Code on GitHub</a> · <a href="https://www.linkedin.com/in/pay-chern-liu-8033b033a">LinkedIn</a></p>
+  <p>Data: daily closing prices from Yahoo Finance (Oct 1, 2021 to Sep 30, 2026). Risk-free rate: 3-month U.S. Treasury bill. This is a data project for learning, not investment advice.</p>
+</div></footer>
+<script src="app.js"></script>
+<script>
+loadData().then(function (data) {
+  fillValues(data);
+  document.getElementById("days").textContent = data.period.days.toLocaleString("en-US");
+
+  function showTable(w) {
+    document.getElementById("table").innerHTML = metricsTable(data[w], data.colors);
+    document.querySelectorAll(".toggle button").forEach(function (b) {
+      b.classList.toggle("on", b.getAttribute("data-w") === w);
+    });
+  }
+  document.querySelectorAll(".toggle button").forEach(function (b) {
+    b.addEventListener("click", function () { showTable(b.getAttribute("data-w")); });
+  });
+  showTable("five_year");
+
+  var ends = COIN_ORDER.map(function (c) { return 100 * (1 + data.five_year[c].total_return); });
+  document.getElementById("min100").textContent = Math.round(Math.min.apply(null, ends));
+  document.getElementById("max100").textContent = Math.round(Math.max.apply(null, ends));
+
+  var html = "";
+  COIN_ORDER.forEach(function (c) {
+    var r = data.five_year[c];
+    html += '<a class="coin-link" href="coin.html?c=' + c + '">' + dot(data.colors[c]) +
+      '<span class="small">' + r.name + '</span><span class="big">' + pct(r.total_return) +
+      '</span><span class="small">over 5 years</span></a>';
+  });
+  document.getElementById("coins").innerHTML = html;
+});
+</script>
+</body>
+</html>
